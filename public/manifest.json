@@ -1,0 +1,16 @@
+{
+  "name": "GymFlow CRM",
+  "short_name": "GymFlow",
+  "description": "Professional Gym Management System",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#4361ee",
+  "background_color": "#f9fafb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
