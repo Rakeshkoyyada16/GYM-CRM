@@ -1,8 +1,9 @@
 import { Fragment } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, Bell, Menu, ChevronRight, Inbox } from 'lucide-react'
+import { Search, Bell, Menu, ChevronRight, Inbox, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTheme } from '@/hooks/useTheme'
 import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
@@ -30,7 +31,9 @@ interface HeaderProps { onMenuClick?: () => void }
 
 export function Header({ onMenuClick }: HeaderProps) {
   const location = useLocation()
+  const { resolvedTheme, toggleTheme } = useTheme()
   const crumbs = getBreadcrumbs(location.pathname)
+  const isDark = resolvedTheme === 'dark'
 
   return (
     <motion.header
@@ -64,6 +67,18 @@ export function Header({ onMenuClick }: HeaderProps) {
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="icon-sm" className="hidden md:flex text-gray-400 hover:text-gray-600">
           <Search className="h-4 w-4" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="text-gray-400 hover:text-gray-600"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+          aria-pressed={isDark}
+          title={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+        >
+          {isDark ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
         </Button>
 
         <Button variant="ghost" size="icon-sm" className="relative text-gray-400 hover:text-gray-600">

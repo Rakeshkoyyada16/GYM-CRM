@@ -2,6 +2,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Connect the design-system tokens below to Tailwind's color utilities. */
+@theme inline {
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-gray-25: var(--gray-25);
+  --color-gray-50: var(--gray-50);
+  --color-gray-100: var(--gray-100);
+  --color-gray-200: var(--gray-200);
+  --color-gray-300: var(--gray-300);
+  --color-gray-400: var(--gray-400);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-700: var(--gray-700);
+  --color-gray-800: var(--gray-800);
+  --color-gray-900: var(--gray-900);
+  --color-gray-950: var(--gray-950);
+}
+
 /* ============================================
    GYMFLOW DESIGN SYSTEM
    Inspired by: Linear · Stripe · Notion · HubSpot
@@ -136,6 +163,39 @@
   --shadow-lg:   0 12px 16px -4px rgba(0, 0, 0, 0.3);
   --shadow-xl:   0 20px 24px -4px rgba(0, 0, 0, 0.3);
   --shadow-ring: 0 0 0 4px rgba(67, 97, 238, 0.25);
+}
+
+/* White surfaces use a neutral dark surface while white text stays unchanged. */
+.dark .bg-white { background-color: var(--gray-25); }
+.dark .bg-white\/95 { background-color: color-mix(in srgb, var(--gray-25) 95%, transparent); }
+.dark .hover\:bg-white:hover { background-color: var(--gray-50); }
+
+/* Keep subtle semantic surfaces readable without turning them into bright panels. */
+.dark :is(.bg-red-50, .bg-red-100) { background-color: color-mix(in srgb, #f04438 14%, var(--gray-25)); }
+.dark :is(.bg-green-50, .bg-green-100, .bg-emerald-50, .bg-emerald-100) { background-color: color-mix(in srgb, #12b76a 14%, var(--gray-25)); }
+.dark :is(.bg-amber-50, .bg-amber-100, .bg-yellow-50) { background-color: color-mix(in srgb, #f79009 14%, var(--gray-25)); }
+.dark :is(.bg-blue-50, .bg-blue-100) { background-color: color-mix(in srgb, #2e90fa 14%, var(--gray-25)); }
+.dark :is(.bg-purple-50, .bg-purple-100, .bg-violet-50) { background-color: color-mix(in srgb, #8b5cf6 14%, var(--gray-25)); }
+.dark :is(.bg-pink-50, .bg-pink-100) { background-color: color-mix(in srgb, #ec4899 14%, var(--gray-25)); }
+.dark .bg-teal-50 { background-color: color-mix(in srgb, #14b8a6 14%, var(--gray-25)); }
+
+/* Theme changes animate only while the active color scheme is being switched. */
+html.theme-changing body,
+html.theme-changing body * ,
+html.theme-changing body *::before,
+html.theme-changing body *::after {
+  transition-property: color, background-color, border-color, fill, stroke, box-shadow !important;
+  transition-duration: var(--duration-base) !important;
+  transition-timing-function: var(--ease-default) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-changing body,
+  html.theme-changing body *,
+  html.theme-changing body *::before,
+  html.theme-changing body *::after {
+    transition-duration: 0ms !important;
+  }
 }
 
 /* ============================================
