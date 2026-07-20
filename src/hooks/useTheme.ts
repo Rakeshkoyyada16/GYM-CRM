@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 
 export type Theme = 'light' | 'dark' | 'system'
+type ResolvedTheme = 'light' | 'dark'
 
 const STORAGE_KEY = 'gymflow-theme'
+const THEME_CHANGE_EVENT = 'gymflow-theme-change'
 
-function getSystemTheme(): 'light' | 'dark' {
+function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'light'
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -16,57 +18,78 @@ function getStoredTheme(): Theme {
   return 'system'
 }
 
-function applyTheme(theme: Theme) {
+function applyTheme(theme: Theme): ResolvedTheme {
   const resolved = theme === 'system' ? getSystemTheme() : theme
   const root = document.documentElement
+  const hasChanged = !root.classList.contains(resolved)
+
+  if (hasChanged) root.classList.add('theme-changing')
   root.classList.remove('light', 'dark')
   root.classList.add(resolved)
+  root.dataset.theme = theme
   root.style.colorScheme = resolved
-  localStorage.setItem(STORAGE_KEY, theme)
+
+  if (hasChanged) {
+    window.setTimeout(() => root.classList.remove('theme-changing'), 250)
+  }
+
+  return resolved
 }
 
 /**
  * Global theme hook.
  * - Persists selection to localStorage
  * - Detects system preference on first load
- * - Listens for system theme changes
- * - Returns resolved theme + toggle function
+ * - Listens for system and cross-tab preference changes
+ * - Returns selected and resolved themes with update actions
  */
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(getStoredTheme)
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
     theme === 'system' ? getSystemTheme() : theme
   )
 
   useEffect(() => {
-    applyTheme(theme)
-    setResolvedTheme(theme === 'system' ? getSystemTheme() : theme)
+    localStorage.setItem(STORAGE_KEY, theme)
+    setResolvedTheme(applyTheme(theme))
   }, [theme])
 
-  // Listen for system theme changes
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => {
-      if (theme === 'system') {
-        applyTheme('system')
-        setResolvedTheme(getSystemTheme())
-      }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleSystemChange = () => {
+      if (theme === 'system') setResolvedTheme(applyTheme('system'))
     }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
+
+    mediaQuery.addEventListener('change', handleSystemChange)
+    return () => mediaQuery.removeEventListener('change', handleSystemChange)
   }, [theme])
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY) return
+      setThemeState(getStoredTheme())
+    }
+    const handleThemeChange = (event: Event) => {
+      setThemeState((event as CustomEvent<Theme>).detail)
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener(THEME_CHANGE_EVENT, handleThemeChange)
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener(THEME_CHANGE_EVENT, handleThemeChange)
+    }
+  }, [])
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme)
+    window.dispatchEvent(new CustomEvent<Theme>(THEME_CHANGE_EVENT, { detail: newTheme }))
   }, [])
 
   const toggleTheme = useCallback(() => {
-    setThemeState(prev => {
-      if (prev === 'light') return 'dark'
-      if (prev === 'dark') return 'light'
-      return getSystemTheme() === 'dark' ? 'light' : 'dark'
-    })
-  }, [])
+    const newTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
+    setTheme(newTheme)
+  }, [resolvedTheme, setTheme])
 
   return { theme, resolvedTheme, setTheme, toggleTheme }
 }
