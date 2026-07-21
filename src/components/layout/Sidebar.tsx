@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -6,7 +7,6 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -28,6 +28,7 @@ interface SidebarProps { collapsed: boolean; onToggle: () => void }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation()
+  const [logoFailed, setLogoFailed] = useState(false)
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -47,9 +48,23 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="flex items-center gap-3"
+                className="flex min-w-0 flex-1 items-center"
               >
-                <img src="/gym_logo.jpg" alt="GOAAL Fitness" className="h-8 w-auto" />
+                {logoFailed ? (
+                  <div className="flex min-w-0 items-center gap-2.5" aria-label="GOAAL Fitness">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500">
+                      <Dumbbell className="h-4 w-4 text-white" aria-hidden="true" />
+                    </div>
+                    <span className="truncate text-sm font-bold tracking-tight text-gray-900">GOAAL Fitness</span>
+                  </div>
+                ) : (
+                  <img
+                    src="/gym_logo.jpg"
+                    alt="GOAAL Fitness"
+                    onError={() => setLogoFailed(true)}
+                    className="block h-10 w-full max-w-[200px] object-contain object-left"
+                  />
+                )}
               </motion.div>
             ) : (
               <motion.div
