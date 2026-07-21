@@ -49,17 +49,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 transition={{ duration: 0.15 }}
                 className="flex items-center gap-3"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
-                  <Dumbbell className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-gray-900 tracking-tight leading-none">
-                    GymFlow
-                  </span>
-                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                    CRM
-                  </span>
-                </div>
+                <img src="/gym_logo.jpg" alt="GOAAL Fitness" className="h-8 w-auto" />
               </motion.div>
             ) : (
               <motion.div
