@@ -1,12 +1,11 @@
 import { motion } from 'framer-motion'
 import {
   Users, UserCheck, IndianRupee, TrendingUp,
-  Calendar, CreditCard, UserPlus, AlertCircle,
-  Clock, Sparkles, ArrowUpRight, ClipboardCheck,
+  UserPlus, AlertCircle, Clock, Sparkles, ClipboardCheck,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 import { MetricCard, MetricCardSkeleton } from '../components/MetricCard'
+import { DashboardDatePicker } from '../components/DashboardDatePicker'
 import { RevenueChart } from '../components/RevenueChart'
 import { AttendanceChart } from '../components/AttendanceChart'
 import { MembershipGrowthChart } from '../components/MembershipGrowthChart'
@@ -84,15 +83,8 @@ export function DashboardPage() {
             Here's what's happening at your gym today.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Calendar className="mr-1.5 h-3.5 w-3.5" />
-            July 20, 2026
-          </Button>
-          <Button size="sm">
-            <ArrowUpRight className="mr-1.5 h-3.5 w-3.5" />
-            View Reports
-          </Button>
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <DashboardDatePicker />
         </div>
       </motion.div>
 
